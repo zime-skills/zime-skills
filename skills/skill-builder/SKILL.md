@@ -8,7 +8,7 @@ metadata:
   zime:roles: ae,se,bdr,marketing,pm,cs
   zime:visibility: global
   zime:skill-version: 2
-  zime:marketplace-version: 0.1.19
+  zime:marketplace-version: 0.1.20
 ---
 
 # Skill Builder
