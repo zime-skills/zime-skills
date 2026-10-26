@@ -1,0 +1,10 @@
+{
+  "name": "zime-skills",
+  "version": "0.1.20",
+  "description": "Open-source GTM skills: call prep, follow-ups, deal and account reviews, competitive intel, sales assets and CS handovers, grounded in your real calls and CRM through the Zime MCP server. Requires a Zime account.",
+  "mcpServers": {
+    "zime": {
+      "httpUrl": "https://mcp.zime.ai/mcp"
+    }
+  }
+}

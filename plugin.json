@@ -1,0 +1,40 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "zime-skills",
+  "version": "0.1.20",
+  "description": "Open-source GTM skills: call prep, follow-ups, deal and account reviews, competitive intel, sales assets and CS handovers, grounded in your real calls and CRM through the Zime MCP server. Requires a Zime account.",
+  "author": {
+    "name": "Zime",
+    "url": "https://zime.ai"
+  },
+  "homepage": "https://zime.ai/gtm-skills",
+  "repository": "https://github.com/zime-skills/zime-skills",
+  "license": "MIT",
+  "keywords": [
+    "gtm",
+    "sales",
+    "revenue-intelligence",
+    "zime-mcp"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Zime",
+        "shortDescription": "Sales skills on your real calls and deals",
+        "longDescription": "Zime records and analyzes your sales calls and links them to CRM deals, accounts and contacts. These skills use that data to prep your next call, draft follow-ups, review calls and accounts, track commitments, build battlecards and sales assets, and write CS handovers. Requires a Zime account.",
+        "developerName": "Zime",
+        "category": "Productivity",
+        "capabilities": ["Read"],
+        "websiteURL": "https://zime.ai/gtm-skills",
+        "privacyPolicyURL": "https://zime.ai/privacy-policy",
+        "defaultPrompt": [
+          "Prep me for my next call",
+          "Review my last call",
+          "Draft the follow-up for my last call"
+        ],
+        "composerIcon": "./assets/icon.png",
+        "logo": "./assets/icon.png"
+      }
+    }
+  }
+}
