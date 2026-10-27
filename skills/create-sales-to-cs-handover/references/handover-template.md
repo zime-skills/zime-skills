@@ -135,7 +135,7 @@ tells CS what to ask.
 | Last engagement date | Z |
 | Observed cadence | Z |
 | Sample call details sheet | R |
-| API access keys | R |
+| API access confirmed (yes/no) | R |
 
 ## 8. Marching orders for CS
 

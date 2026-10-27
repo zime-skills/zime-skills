@@ -7,13 +7,13 @@ metadata:
   zime:tag: workflow
   zime:roles: ae,se
   zime:visibility: global
-  zime:skill-version: 1
+  zime:skill-version: "1"
   zime:marketplace-version: 0.1.20
 ---
 
 # Call Prep
 
-Before anything else, call the Zime connector tool `skill_used` with skill_id `dfeec687-3057-43fb-abc0-bb0c46256665`, skill_version `1` and skill_slug `call-prep`. It records which skill ran for Zime usage analytics. If the Zime connector is not available, skip this step and continue. There is no need to narrate this call.
+Before anything else, call the Zime connector tool `skill_used` with skill_id `dfeec687-3057-43fb-abc0-bb0c46256665`, skill_version `1` and skill_slug `call-prep`. It records which skill ran for Zime usage analytics. If the Zime connector is not available, skip this step and continue.
 
 Gets a rep up to speed before a customer call. The prep-note agent builds the
 note from the meeting's CRM deal and account, its external attendees, and the
@@ -43,17 +43,19 @@ to resolve the right meeting and deliver what the agent returns.
 ## Usage
 
 ```
-/call-prep <company or meeting> [+ when]
+@call-prep <company or meeting> [+ when]
 ```
 
-Prep me for: $ARGUMENTS
+In the ChatGPT desktop app you can also type `/call-prep`.
+
+Prep for the call the user named.
 
 ## Routing
 
 - Anything about PAST calls (recaps, "what objections came up") →
-  `call-recap`.
+  `review-call`.
 - Deal strategy not tied to one upcoming call ("how do I win this") →
-  `deal-strategy`.
+  `review-account`.
 - "What meetings do I have?" is a schedule listing → `daily-briefing`.
 - Use this skill only when there is an upcoming, scheduled call AND the user
   wants to prepare for it.
@@ -116,8 +118,9 @@ said.
   needs workspace setup; tell the user to ask their Zime admin.
 - **"A prep note for this call is already being generated"** — another
   request is mid-flight; wait a few seconds and call again once.
-- **An error** — `{"error": "<CODE>"}`. `INTERNAL_ERROR` retry once;
-  `UNAUTHORIZED` means re-authorize. If it still fails, say plainly the
+- **An error** — `{"error": "<CODE>", "message": "<sentence>"}`. Show the
+  user the message. `INTERNAL_ERROR` retry once; `CREDIT_LIMIT` stop and relay
+  the message; `UNAUTHORIZED` means reconnect. If it still fails, say plainly the
   prep-note service couldn't be reached and offer the local fallback — never
   silently substitute a hand-written note and present it as agent-backed.
 
@@ -150,7 +153,7 @@ Rules:
    step.
 2. **Only your own meetings** — the agent can't prep a colleague's call.
 3. **Recently prepped calls return instantly** — that's cached by design.
-4. **Want a past call instead?** That's `call-recap`.
+4. **Want a past call instead?** That's `review-call`.
 
 ## Local mode (only when no zime-mcp server is connected)
 
@@ -170,10 +173,12 @@ Sample inputs to try first: `assets/sample-meeting-context.txt` and
 
 MCP mode sends the query words and date range (to `list_meetings`), then the
 user's request wording and a `calendar_event_id` (to `prep_note`). Local mode
-reads only the files the user points at — nothing leaves the machine.
+reads only the files the user points at — nothing leaves the machine. At the
+start, the skill calls the Zime connector tool `skill_used`, which records the
+skill's id, version and name with your user and session in Zime's usage log.
 
 ## Related Skills
 
-- **get-meeting** — just the meeting facts, no prep note
-- **call-recap** — the same account's past calls
-- **deal-strategy** — the deal behind this meeting
+- **review-call** — the same account's past calls: record, recap or exact
+  words
+- **review-account** — the deal behind this meeting

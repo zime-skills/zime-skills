@@ -7,13 +7,13 @@ metadata:
   zime:tag: intelligence
   zime:roles: ae,se,cs
   zime:visibility: global
-  zime:skill-version: 1
+  zime:skill-version: "1"
   zime:marketplace-version: 0.1.20
 ---
 
 # Review Call
 
-Before anything else, call the Zime connector tool `skill_used` with skill_id `af945a16-edc8-4838-ac82-6b315a89527d`, skill_version `1` and skill_slug `review-call`. It records which skill ran for Zime usage analytics. If the Zime connector is not available, skip this step and continue. There is no need to narrate this call.
+Before anything else, call the Zime connector tool `skill_used` with skill_id `af945a16-edc8-4838-ac82-6b315a89527d`, skill_version `1` and skill_slug `review-call`. It records which skill ran for Zime usage analytics. If the Zime connector is not available, skip this step and continue.
 
 Everything about **one** call or meeting, at whatever depth the question needs:
 the record, the recap, or the exact words. One resolve step feeds all three, so
@@ -69,10 +69,12 @@ why no transcript exists.
 ## Usage
 
 ```
-/review-call <company, topic, or attendee> [+ when] [+ what you want]
+@review-call <company, topic, or attendee> [+ when] [+ what you want]
 ```
 
-Review the call: $ARGUMENTS
+In the ChatGPT desktop app you can also type `/review-call`.
+
+Review the call the user named, at the depth they asked for.
 
 ## Choosing the depth
 
@@ -144,9 +146,11 @@ guess. "The latest one" → take the newest.
 window. This does **not** mean the call doesn't exist; the most common cause
 is a date window that excludes it. Say that, show near-misses, offer to
 widen the range. Never substitute a different call.
-- An error — `{"error": "<CODE>"}`. `INTERNAL_ERROR` retry once;
-`UNAUTHORIZED` / `FORBIDDEN` means re-authorize or lack of access;
-`INVALID_ARGUMENT` means malformed dates, fix and re-call.
+- An error — `{"error": "<CODE>", "message": "<sentence>"}`. Show the user
+the message. `INTERNAL_ERROR` retry once; `TIMEOUT` narrow the window and
+retry; `CREDIT_LIMIT` stop and relay the message; `UNAUTHORIZED` /
+`FORBIDDEN` means reconnect or lack of access; `INVALID_ARGUMENT` means
+malformed dates, fix and re-call.
 
 A resolved row with `has_transcript: false` ends Recap and Verbatim here. Say
 which case it is, upcoming or unrecorded, and don't imply a transcript could
@@ -239,15 +243,12 @@ you only ran the recap, fetch the transcript.
 
 ### Rendering
 
-Render the **header block** of any depth as a small inline visual, a card with
-badges for the metadata fields, so the reader can see at a glance which call
-this is.
+Render the **header block** of any depth as the short labelled markdown lines
+in the templates above, so the reader can see at a glance which call this is.
 
 **A transcript body stays plain text below it.** No re-wrapping, no re-styling
-of speaker turns, no truncation, no colour. A long transcript is easier to read
-and copy as text than inside a rendered box.
-
-Fall back to the markdown above wherever inline visuals aren't available.
+of speaker turns, no truncation. A long transcript is easier to read and copy
+as plain text.
 
 ## Tips
 
@@ -276,7 +277,10 @@ than reconstructing what was probably said.
 
 MCP mode sends the query words and date range to `list_meetings`, then either
 the recap question naming the call to `ask_zime`, or the pinned `call_id` to
-`get_transcript`. Local mode reads only the file the user provided.
+`get_transcript`. Local mode reads only the file the user provided. At the
+start, the skill calls the Zime connector tool `skill_used`, which records
+the skill's id, version and name with your user and session in Zime's usage
+log.
 
 ## Related Skills
 

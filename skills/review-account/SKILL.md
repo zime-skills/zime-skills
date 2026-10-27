@@ -7,13 +7,13 @@ metadata:
   zime:tag: intelligence
   zime:roles: ae,se,cs,pm
   zime:visibility: global
-  zime:skill-version: 1
+  zime:skill-version: "1"
   zime:marketplace-version: 0.1.20
 ---
 
 # Review Account
 
-Before anything else, call the Zime connector tool `skill_used` with skill_id `8b888fca-2a7d-442c-988d-fdb64dce6155`, skill_version `1` and skill_slug `review-account`. It records which skill ran for Zime usage analytics. If the Zime connector is not available, skip this step and continue. There is no need to narrate this call.
+Before anything else, call the Zime connector tool `skill_used` with skill_id `8b888fca-2a7d-442c-988d-fdb64dce6155`, skill_version `1` and skill_slug `review-account`. It records which skill ran for Zime usage analytics. If the Zime connector is not available, skip this step and continue.
 
 Everything about the commercial side: one account, one deal, or the whole
 pipeline, as a record or as a grounded analysis. Two questions decide the
@@ -88,10 +88,13 @@ not that the deal is clean.
 ## Usage
 
 ```
-/review-account <account, deal, segment, rep, or window> [+ your angle]
+@review-account <account, deal, segment, rep, or window> [+ your angle]
 ```
 
-Review: $ARGUMENTS
+In the ChatGPT desktop app you can also type `/review-account`.
+
+Review the account, deal or pipeline scope the user named, with any angle
+they gave.
 
 ## Routing
 
@@ -196,8 +199,10 @@ outside the date window, or not visible to this user. Say that, show
 near-misses, and consider whether the user meant a prospect (→
 `account-research`). Never substitute a similarly-named account or deal, and
 never tell the user the deal doesn't exist.
-- An error — `{"error": "<CODE>"}`. `INTERNAL_ERROR` is usually transient,
-retry once. `UNAUTHORIZED` / `FORBIDDEN` means re-authorize or lack of
+- An error — `{"error": "<CODE>", "message": "<sentence>"}`. Show the user
+the message. `INTERNAL_ERROR` is usually transient, retry once. `TIMEOUT`
+means narrow the scope or window and retry. `CREDIT_LIMIT` means stop and
+relay the message. `UNAUTHORIZED` / `FORBIDDEN` means reconnect or lack of
 access. `INVALID_ARGUMENT` means malformed arguments, fix and re-call. If it
 fails twice, say plainly the service couldn't be reached and offer the local
 fallback. Never pass generic advice off as a grounded read, and never
@@ -287,28 +292,22 @@ obviously relevant. The agent's scope is the scope.
 - If the user asked for a specific window and the answer doesn't state one, say
 the window is unconfirmed rather than assuming it matched.
 
-### Render an analysis as a visual artifact
+### Present an analysis in markdown
 
-Present a finished analysis as a self-contained HTML artifact rather than plain
-markdown, so it is scannable at a glance:
+Present a finished analysis as plain markdown, so it is scannable at a
+glance:
 
-- **Card-style sections** for each block, not one long wall of text.
-- **Badges** for short labelled values (stage, status, owner, dates).
-- **Light colour accents on status and risk fields only** — red for
-at-risk/blocked/overdue, amber for needs-attention, green for
-on-track/confirmed. Colour carries meaning here, so never colour a field with
-no status semantics, and always keep the word as well as the colour: colour
-alone is unreadable for anyone who can't distinguish it.
-- **Keep prose in the chat response, not in the artifact.** Caveats, what you
-did, and what to do next belong in the surrounding message. The artifact
-holds the structured result.
-- Every grounding rule above still applies. An artifact makes gaps *less*
-visible, so a missing value stays visible as "not stated" rather than being
-quietly dropped to keep a card tidy.
+- **Short sections with labelled lines** for each block, not one long wall
+of text.
+- **Status written as words** — at risk, needs attention, on track — beside
+the field it describes.
+- **Keep prose in the chat response, around the structured result.**
+Caveats, what you did, and what to do next belong in the surrounding
+message.
+- Every grounding rule above still applies. A missing value stays visible
+as "not stated" rather than being quietly dropped to keep a section tidy.
 
-A plain record needs no artifact; the table is already the answer. Fall back to
-markdown when artifacts aren't available, for example Claude Code in a
-terminal. Say which you did only if the user asked for a specific format.
+A plain record needs nothing extra; the table is already the answer.
 
 ## Tips
 
@@ -343,7 +342,9 @@ than guessing at stage, amount, or close date.
 MCP mode sends the query words, domain, dates and any pinned id to
 `list_accounts` or `list_deals`, and the analysis question to `ask_zime`, which
 reads the CRM and call data the workspace already holds. Local mode reads only
-the file the user provided.
+the file the user provided. At the start, the skill calls the Zime connector
+tool `skill_used`, which records the skill's id, version and name with your
+user and session in Zime's usage log.
 
 ## Related Skills
 

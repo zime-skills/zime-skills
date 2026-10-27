@@ -1,19 +1,19 @@
 ---
 name: create-sales-to-cs-handover
-description: "Builds the Sales to CS handover doc for one deal or account. Covers stakeholders, why we won, open objections, commitments, and call history. Creates a real Google Doc when connected, otherwise gives you the text to paste in."
+description: "Builds the Sales to CS handover doc for one deal or account. Covers stakeholders, why we won, open objections, commitments, and call history. Gives you the handover as markdown, ready to paste into a doc."
 license: MIT
 metadata:
   zime:skill-id: 0e82dc75-cffd-449c-b45f-ba8b00f94ea1
   zime:tag: workflow
   zime:roles: ae,cs
   zime:visibility: global
-  zime:skill-version: 1
+  zime:skill-version: "1"
   zime:marketplace-version: 0.1.20
 ---
 
 # Sales → CS Handover
 
-Before anything else, call the Zime connector tool `skill_used` with skill_id `0e82dc75-cffd-449c-b45f-ba8b00f94ea1`, skill_version `1` and skill_slug `create-sales-to-cs-handover`. It records which skill ran for Zime usage analytics. If the Zime connector is not available, skip this step and continue. There is no need to narrate this call.
+Before anything else, call the Zime connector tool `skill_used` with skill_id `0e82dc75-cffd-449c-b45f-ba8b00f94ea1`, skill_version `1` and skill_slug `create-sales-to-cs-handover`. It records which skill ran for Zime usage analytics. If the Zime connector is not available, skip this step and continue.
 
 Fills the handover document CS uses to accept an account. Two kinds of field
 live in it, and the difference is the whole skill:
@@ -53,8 +53,7 @@ exists to provide.
 │  ✓ Open gaps listed at the top so CS sees them first             │
 ├─────────────────────────────────────────────────────────────────┤
 │  STEP 4 — DELIVER                                                │
-│  ✓ Create a Google Doc when Google Drive is connected            │
-│  ~ Otherwise hand back the markdown to paste in manually          │
+│  ✓ Hand back the filled handover as markdown, ready to paste     │
 ├─────────────────────────────────────────────────────────────────┤
 │  LOCAL FALLBACK (no zime-mcp)                                    │
 │  ~ Narrower draft from provided transcripts or CRM export        │
@@ -64,17 +63,19 @@ exists to provide.
 ## Usage
 
 ```
-/create-sales-to-cs-handover <deal or account name>
+@create-sales-to-cs-handover <deal or account name>
 ```
 
-Build the handover for: $ARGUMENTS
+In the ChatGPT desktop app you can also type `/create-sales-to-cs-handover`.
+
+Build the handover for the deal or account the user named.
 
 ## Routing
 
-- Deal strategy while still selling → `deal-strategy`.
+- Deal strategy while still selling, or the account's CRM record alone →
+  `review-account`.
 - Just the open commitments → `actions-commitments`.
 - An account review deck for a QBR → `create-sales-asset`.
-- The account's CRM record alone → `get-account`.
 
 ## What I Need From You
 
@@ -122,10 +123,11 @@ can't be validated by CS.
 ### Outcomes
 
 Usual shapes — `resolved` / `multiple_matches` / `no_match`, or
-`{"error": "<CODE>"}` (`INTERNAL_ERROR` retry once; `UNAUTHORIZED` /
-`FORBIDDEN` means re-authorize or lack of access). A failed or empty evidence
-call means that section becomes a `[SALES TO FILL]` prompt — it does not become
-a guess.
+`{"error": "<CODE>", "message": "<sentence>"}` (show the user the message;
+`INTERNAL_ERROR` retry once; `TIMEOUT` narrow and retry; `CREDIT_LIMIT` stop
+and relay the message; `UNAUTHORIZED` / `FORBIDDEN` means reconnect or lack
+of access). A failed or empty evidence call means that section becomes a
+`[SALES TO FILL]` prompt — it does not become a guess.
 
 ## Output
 
@@ -136,30 +138,6 @@ the full field list. Structure:
 # Sales → CS Handover: [Account]
 _Drafted from Zime call and CRM data on [date]. Sections marked
 [SALES TO FILL] need the rep before CS can accept._
-
-
-### Render it as a visual artifact
-
-Present the finished output as a self-contained HTML artifact rather than
-plain markdown in the chat, so it's scannable at a glance:
-
-- **Card-style sections** for each block above, not one long wall of text.
-- **Badges** for short labelled values (stage, status, owner, dates).
-- **Light colour accents on status and risk fields only** — red for
-  at-risk/blocked/overdue, amber for needs-attention, green for
-  on-track/confirmed. Colour carries meaning here, so never colour a field
-  that has no status semantics, and always keep the word as well as the
-  colour: colour alone is unreadable for anyone who can't distinguish it.
-- **Keep prose in the chat response, not in the artifact.** Caveats, what
-  you did, and what to do next belong in the surrounding message. The
-  artifact holds the structured result.
-- Every grounding rule above still applies. An artifact makes gaps *less*
-  visible, so a missing value stays visible as "not stated" rather than
-  being quietly dropped to keep a card tidy.
-
-Fall back to the markdown above when artifacts aren't available in the
-current environment (for example Claude Code in a terminal). Say which you
-did only if the user asked for a specific format.
 
 ## Open gaps — blocking acceptance
 - [ ] [field] — [SALES TO FILL]
@@ -206,18 +184,16 @@ did only if the user asked for a specific format.
 - [unresolved item] — [source]
 ```
 
-## Deliver as a Google Doc
+Present the finished handover as plain markdown: short sections with labelled
+lines, status written as words (at risk, needs attention, on track), any
+commentary in the chat around it, and gaps kept visible as "not stated" or
+`[SALES TO FILL]`.
 
-Once the markdown above is filled in, create the actual handover doc so CS
-gets a real file, not a chat message to copy by hand:
+## Deliver
 
-1. Check whether a Google Drive connector is available.
-2. If yes, call it to create a file with `title: "Sales → CS Handover: [Account]"`,
-   `mimeType: "application/vnd.google-apps.document"`, and the markdown above
-   as the text content. Share the resulting link back to the user.
-3. If no Drive connector is available, say so plainly and give the user the
-   markdown to paste into a doc themselves. Don't silently stay in chat —
-   name the gap so the user knows a manual step is needed.
+Hand back the filled-in markdown above as the finished handover, ready for
+the user to paste into Docs or another editor and share with CS. Say plainly
+that the paste is a manual step, so the user knows it's needed.
 
 ### Rules
 
@@ -257,12 +233,13 @@ carry.
 
 MCP mode sends query words (to `list_deals`/`list_accounts`), the evidence
 question naming the deal or account (to `ask_zime`), and query words
-plus dates (to `list_meetings`). If a Google Drive connector is available,
-the finished handover text is sent to it to create the doc. Local mode reads
-only the provided files.
+plus dates (to `list_meetings`). Local mode reads only the provided files.
+At the start, the skill calls the Zime connector tool `skill_used`, which
+records the skill's id, version and name with your user and session in
+Zime's usage log.
 
 ## Related Skills
 
 - **actions-commitments** — close the gaps before handing over
-- **deal-strategy** — the pre-handover view of the same deal
+- **review-account** — the pre-handover view of the same deal
 - **create-sales-asset** — the account review deck CS will run later
