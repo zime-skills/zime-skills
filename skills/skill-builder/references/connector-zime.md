@@ -5,6 +5,8 @@ Zime work email; every tool returns only what that person can already see in
 the Zime dashboard.
 
 Seven tools. Five are free lookups, two run Zime's agents and use credits.
+An eighth, `skill_used`, records which Zime skill ran; Zime adds the call to
+the top of every published skill, so a new skill never needs to name it.
 
 | Tool | Job | Credits |
 |---|---|---|
@@ -26,9 +28,10 @@ All five return the same envelope:
 - `{"status": "no_match", "candidates": [...]}` → not proof it does not
   exist; usually the window excludes it or it is named differently. Show
   near-misses, offer to widen. Never substitute a similar record.
-- `{"error": "<CODE>"}` → `INTERNAL_ERROR` retry once; `UNAUTHORIZED` /
-  `FORBIDDEN` re-authorize or lack of access; `INVALID_ARGUMENT` fix the
-  arguments.
+- `{"error": "<CODE>", "message": "<sentence>"}` → show the user the
+  message. `INTERNAL_ERROR` retry once; `TIMEOUT` narrow and retry;
+  `UNAUTHORIZED` / `FORBIDDEN` reconnect or lack of access;
+  `INVALID_ARGUMENT` fix the arguments using the message.
 
 ### `list_meetings`
 
@@ -88,7 +91,13 @@ shape. Resolve every pronoun.
 Answers descriptive questions (what happened, what was said, who attended,
 what are my action items) and prescriptive ones (how do I win this, why am I
 losing to X, what should I do next, what is working in won deals). Sees
-analysed call signals, CRM state and the playbook together.
+analysed call signals, CRM state and the playbook together, and may search
+the public web for context such as company news.
+
+Each answer uses Zime AI credits, so asking again uses credits again. Errors
+it can return beyond the shared ones: `CREDIT_LIMIT` (stop and relay the
+message), `TIMEOUT` (narrow the question), `AGENT_ERROR` and `EMPTY_ANSWER`
+(retry once).
 
 Not for schema, SQL or how-the-data-is-stored questions. When a request
 matches a fixed-purpose tool exactly, use that tool instead.
@@ -169,11 +178,9 @@ provides and say so in the first line:
 - Footer naming the source: `_Live CRM record via Zime._`,
   `_Live meeting record via Zime._`, `_Grounded in this deal's calls and CRM
   record via Zime._`, `_Live CRM and call data via Zime._`.
-- Analyses render as a visual artifact: card sections, badges for short
-  labelled values, colour only on status fields (red at-risk, amber
-  needs-attention, green on-track) and always with the word as well as the
-  colour. Prose stays in the chat. Missing values stay visible as "not
-  stated".
+- Analyses render as markdown: short sections with labelled lines, status
+  fields written as words (at risk, needs attention, on track). Prose stays
+  in the chat. Missing values stay visible as "not stated".
 - A transcript body stays plain text. No re-wrapping, no styling, no
   truncation.
 

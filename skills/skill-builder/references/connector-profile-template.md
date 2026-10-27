@@ -7,7 +7,7 @@ descriptions are the source; copy names and arguments exactly.
 
 ## Identity
 
-- **Connector:** <name as it appears in Claude>
+- **Connector:** <name as it appears in ChatGPT>
 - **Server URL:** <https://…>
 - **Sign-in:** <how a user authenticates; what scope of data they see>
 - **Cost:** <which tools consume credits or quota, if any>
@@ -50,7 +50,7 @@ like; what "not found" means and what it does not mean>
 ## Output conventions
 
 - <Header fields to show. Footer line naming the source.>
-- <Whether analyses render as an artifact, and the colour rules.>
+- <How analyses are formatted in markdown, and any status-label rules.>
 
 ## Sibling skills
 

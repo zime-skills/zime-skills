@@ -1,7 +1,8 @@
 # Checklist
 
 Run top to bottom before packaging. Each line is something that gets a skill
-rejected at upload, ignored by Claude, or wrong in someone else's session.
+rejected at upload, ignored by the assistant, or wrong in someone else's
+session.
 
 ## Identity
 
@@ -36,6 +37,10 @@ rejected at upload, ignored by Claude, or wrong in someone else's session.
 - [ ] "What this sends where" names the exact fields and tools.
 - [ ] Every slug under Routing and Related Skills exists in the catalogue.
 - [ ] One job. No "and" joining two different outputs.
+- [ ] No step that tells the assistant to use a different connector, such as
+      "if a Google Drive connector is available, create the file there".
+- [ ] No assistant-specific features: no "render it as an artifact" block and
+      no `$ARGUMENTS` placeholder. Output is plain markdown.
 
 ## Files
 
@@ -51,7 +56,8 @@ Skills are scanned on save. Any of these rejects the version:
 
 - [ ] No link to a host other than `zime.ai` and its subdomains,
       `docs.anthropic.com` or `support.anthropic.com`. A skill can instruct
-      Claude to send data to any URL it names, so everything else is blocked.
+      the assistant to send data to any URL it names, so everything else is
+      blocked, including OpenAI's documentation.
 - [ ] No credential-shaped strings: cloud access keys, tokens, private key
       blocks, or `password = "…"` style assignments, even as examples.
 - [ ] No instruction-override phrasing, even when describing what not to do.

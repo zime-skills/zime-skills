@@ -51,9 +51,10 @@ branch).*
 
 ## Usage
 
-    /<slug> <what the user types> [+ optional hint]
+    @<slug> <what the user types> [+ optional hint]
 
-<One imperative line that ends with: $ARGUMENTS>
+<One imperative line saying what to do with the user's request, e.g. "Prep me
+for the call the user named.". Do not use placeholders such as $ARGUMENTS.>
 
 ## Routing
 
@@ -100,11 +101,14 @@ verbatim if they gave one.>
 - `no_match` → <the most likely cause>, show near-misses, offer to widen.
   Never substitute a similar <record>.
 - <Any tool-specific status, one line each.>
-- An error → `{"error": "<CODE>"}`. `INTERNAL_ERROR` retry once;
-  `UNAUTHORIZED` / `FORBIDDEN` means re-authorize or lack of access;
-  `INVALID_ARGUMENT` means malformed arguments, fix and re-call. If it fails
-  twice, say plainly the service could not be reached and offer the local
-  fallback. Never present a hand-written result as tool-backed.
+- An error → `{"error": "<CODE>", "message": "<sentence>"}`. Show the user
+  the message. `INTERNAL_ERROR` / `AGENT_ERROR` retry once; `TIMEOUT` narrow
+  the question and retry; `CREDIT_LIMIT` stop and relay the message;
+  `UNAUTHORIZED` / `FORBIDDEN` means reconnect or lack of access;
+  `INVALID_ARGUMENT` means malformed arguments, fix them using the message
+  and re-call. If it fails twice, say plainly the service could not be reached
+  and offer the local fallback. Never present a hand-written result as
+  tool-backed.
 
 ## Output
 
@@ -125,9 +129,10 @@ Rules:
 - Add nothing the tool did not return. Unknown is a finding; state it.
 - <Any rule specific to this output, e.g. quotes only from get_transcript.>
 
-*If the output is an analysis, add the "Render it as a visual artifact" block
-from review-account: cards, badges, colour only on status fields, prose stays
-in the chat, gaps stay visible as "not stated".*
+*If the output is an analysis, format it as markdown: short sections with
+labelled lines, status fields written as words (at risk, needs attention, on
+track), prose in the chat, gaps visible as "not stated". Do not ask for an
+artifact or any other assistant-specific rendering.*
 
 ## Tips
 

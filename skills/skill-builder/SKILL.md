@@ -1,25 +1,25 @@
 ---
 name: skill-builder
-description: "Builds a new Claude skill from a plain-language request, or tightens an existing one. Knows the Zime connector inside out, so a skill for calls, deals, accounts, pipeline or prep uses the right Zime tools and follows the same shape as every other Zime skill. Works for any other connector too, from a short profile of its tools. Use for \"make me a skill that…\", \"create a skill for…\", \"turn this prompt into a skill\", \"build a skill on top of Zime\", \"write a skill for the HubSpot connector\", \"improve this skill\", \"why isn't my skill triggering\", or \"package this as a .skill\". Not for running a skill: to prep a call, recap one, or review a deal, use those skills directly."
+description: "Builds a new skill from a plain-language request, or tightens an existing one. Knows the Zime connector inside out, so a skill for calls, deals, accounts, pipeline or prep uses the right Zime tools and follows the same shape as every other Zime skill. Works for any other connector too, from a short profile of its tools. Use for \"make me a skill that…\", \"create a skill for…\", \"turn this prompt into a skill\", \"build a skill on top of Zime\", \"write a skill for another connector\", \"improve this skill\", or \"why isn't my skill triggering\". Not for running a skill: to prep a call, recap one, or review a deal, use those skills directly."
 license: MIT
 metadata:
   zime:skill-id: ca80a662-d53f-4b06-b391-c8e62151ce8f
   zime:tag: workflow
   zime:roles: ae,se,bdr,marketing,pm,cs
   zime:visibility: global
-  zime:skill-version: 2
+  zime:skill-version: "2"
   zime:marketplace-version: 0.1.20
 ---
 
 # Skill Builder
 
-Before anything else, call the Zime connector tool `skill_used` with skill_id `ca80a662-d53f-4b06-b391-c8e62151ce8f`, skill_version `2` and skill_slug `skill-builder`. It records which skill ran for Zime usage analytics. If the Zime connector is not available, skip this step and continue. There is no need to narrate this call.
+Before anything else, call the Zime connector tool `skill_used` with skill_id `ca80a662-d53f-4b06-b391-c8e62151ce8f`, skill_version `2` and skill_slug `skill-builder`. It records which skill ran for Zime usage analytics. If the Zime connector is not available, skip this step and continue.
 
-Turns "I wish Claude did X for me every time" into a skill your whole team can
-install. You describe the job; this skill interviews you for the parts that
-matter, picks the connector tools that do the work, writes the skill in the
-house shape, checks it against the rules that get skills rejected, and hands
-back a folder ready to upload.
+Turns "I wish my assistant did X for me every time" into a skill your whole
+team can use. You describe the job; this skill interviews you for the parts
+that matter, picks the connector tools that do the work, writes the skill in
+the house shape, checks it against the rules that get skills rejected, and
+hands back a folder ready to publish.
 
 Zime ships as the built-in connector profile, so anything about calls, deals,
 accounts, pipeline or call prep comes out already wired to `ask_zime`,
@@ -40,7 +40,7 @@ fill in once, or from its live tool list if it is connected in this chat.
 │                 answers; one entity or many                      │
 │  4  DRAFT       fill references/skill-template.md, every section │
 │  5  CHECK       references/checklist.md — limits, links, shape   │
-│  6  PACKAGE     <slug>/SKILL.md (+ references/), ready to upload │
+│  6  PACKAGE     <slug>/SKILL.md (+ references/), ready to publish│
 ├─────────────────────────────────────────────────────────────────┤
 │  NOT THIS SKILL (route away)                                     │
 │  ✗ Actually prepping, recapping, reviewing → that skill          │
@@ -51,10 +51,12 @@ fill in once, or from its live tool list if it is connected in this chat.
 ## Usage
 
 ```
-/skill-builder <what the skill should do> [for <connector>]
+@skill-builder <what the skill should do> [for <connector>]
 ```
 
-Build a skill that: $ARGUMENTS
+In the ChatGPT desktop app you can also type `/skill-builder`.
+
+Build a skill that does what the user described.
 
 ## Routing
 
@@ -136,17 +138,17 @@ read this; write it for them.
 
 ## Step 5 — Write the description last
 
-The description is the only thing Claude reads when deciding whether to run
-the skill, so it does more work than the whole body.
+The description is the only thing the assistant reads when deciding whether to
+run the skill, so it does more work than the whole body.
 
-- Under 1,024 characters. The Zime dashboard allows 1,200, but claude.ai
-uploads reject anything longer, so stay under the lower bar.
+- Under 1,024 characters. The Zime dashboard allows 1,200, but ChatGPT
+rejects skill descriptions longer than 1,024, so stay under the lower bar.
 - Lead with what it does, in the words a colleague would use.
 - Include the trigger phrases from the interview, quoted, as they would be
 typed.
 - End with one sentence on what it is **not** for, naming the sibling skill.
-- No "Use when the user…" filler. Every sentence should either help Claude
-recognise the moment or rule one out.
+- No "Use when the user…" filler. Every sentence should either help the
+assistant recognise the moment or rule one out.
 
 ## Step 6 — Check, then package
 
@@ -159,14 +161,27 @@ Files: SKILL.md[, references/<name>.md …]
 
 <the full SKILL.md, then each sibling file, each in its own code block>
 
-**Next:** Skills → Upload, drop the folder as a .skill zip (or paste the
-SKILL.md into a new skill), set visibility, publish. It reaches Claude on the
-next sync.
+**Next:** see "Getting the skill live" below.
 ```
 
 Where files can be created, write the folder `<slug>/SKILL.md` plus any
 `references/`, `assets/` or `scripts/` files and offer the zip. Where they
 cannot, the code blocks are the deliverable.
+
+## Getting the skill live
+
+Give the user these steps after the package:
+
+- **For the whole team (recommended):** in the Zime dashboard, open Skills →
+Upload and drop the folder as a zip (or paste the SKILL.md into a new skill),
+set visibility, and publish. Zime syncs it to your team's Zime plugin, so it
+reaches everyone who has the plugin installed.
+- **Just for yourself in the ChatGPT desktop app:** start a Work chat, type
+`@skill-creator` and paste the SKILL.md, or add the folder under **Skills** in
+the sidebar. Skills added this way work only in the desktop app. To use the
+skill on chatgpt.com or mobile, publish it from the Zime dashboard instead.
+
+Run a published skill with `@<slug>`, or `/<slug>` in the ChatGPT desktop app.
 
 ## Rules this skill enforces in every draft
 
@@ -181,11 +196,16 @@ the draft must say so in those words.
 tool wants them in the query.
 - Every draft has a local mode, even if it is one line saying what it cannot
 do without the connector.
+- No instructions that depend on one assistant's features, such as rendering
+an artifact or a placeholder like `$ARGUMENTS`. Write plain markdown output
+that any assistant can produce.
+- No step that tells the assistant to use a different connector. A skill
+uses the tools of the connector it was built for.
 
 ## Tips
 
 1. **Start from a prompt you already reuse.** If you keep pasting the same
-ask into Claude, that ask is the interview.
+ask into ChatGPT, that ask is the interview.
 2. **Bring the three trigger phrases.** The description is only as good as
 the phrasings it was written for.
 3. **Narrow beats broad.** "Renewals with no exec sponsor" builds a sharper
@@ -203,10 +223,12 @@ connected Zime before they publish.
 
 ## What this sends where
 
-Nothing. This skill writes text. If, and only if, the user asks you to read
-the tools of a connector that is connected in this chat, you list those tools
-from their descriptions; no call is made to them. The Zime profile in
-`references/` is read locally.
+At the start, this skill calls the Zime connector tool `skill_used`, which
+records the skill's id, version and name with your user and session in
+Zime's usage log. Beyond that it only writes text. If, and only if, you ask
+it to read the tools of a connector that is connected in this chat, it lists
+those tools from their descriptions; no call is made to them. The Zime
+profile in `references/` is read locally.
 
 ## Related Skills
 
