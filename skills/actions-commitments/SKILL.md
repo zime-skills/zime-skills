@@ -7,13 +7,13 @@ metadata:
   zime:tag: execution
   zime:roles: ae,cs
   zime:visibility: global
-  zime:skill-version: 1
+  zime:skill-version: "1"
   zime:marketplace-version: 0.1.20
 ---
 
 # Actions & Commitments
 
-Before anything else, call the Zime connector tool `skill_used` with skill_id `65cb2c4b-4d72-4393-81b5-7546750abae2`, skill_version `1` and skill_slug `actions-commitments`. It records which skill ran for Zime usage analytics. If the Zime connector is not available, skip this step and continue. There is no need to narrate this call.
+Before anything else, call the Zime connector tool `skill_used` with skill_id `65cb2c4b-4d72-4393-81b5-7546750abae2`, skill_version `1` and skill_slug `actions-commitments`. It records which skill ran for Zime usage analytics. If the Zime connector is not available, skip this step and continue.
 
 Answers "what's still open?" with commitments that were actually made — who
 owns each one and when it's due. The value here is that nothing is invented:
@@ -43,17 +43,19 @@ whoever seems likely.
 ## Usage
 
 ```
-/actions-commitments <call, deal, or account> [+ when]
+@actions-commitments <call, deal, or account> [+ when]
 ```
 
-Show open commitments for: $ARGUMENTS
+In the ChatGPT desktop app you can also type `/actions-commitments`.
+
+Show the open commitments for the call, deal or account the user named.
 
 ## Routing
 
-- A full recap of one call, not just its actions → `call-recap`.
+- A full recap of one call, not just its actions → `review-call`.
 - The email that chases these items → `follow-up`.
-- Deal risk and strategy rather than open items → `deal-strategy`.
-- Pipeline-wide status across many deals → `pipeline-review`.
+- Deal risk and strategy, or pipeline-wide status across many deals, rather
+  than open items → `review-account`.
 
 ## What I Need From You
 
@@ -81,7 +83,7 @@ Pick the narrowest scope the request implies:
 |---|---|---|
 | "on the Acme call" | `list_meetings` (`recorded: true`) | name the call in the question |
 | "on the Northwind deal" | `list_deals` | name the deal in the question |
-| "what did I promise Concerto" | `list_deals` for that account | name the account in the question |
+| "what did I promise Globex" | `list_deals` for that account | name the account in the question |
 
 `multiple_matches` → show candidates, ask, pin the id. Never guess.
 `no_match` → say the window or naming likely excludes it; offer to widen.
@@ -106,9 +108,11 @@ conversation.
 - **A list of commitments** — deliver per Output below.
 - **Nothing open** — say that plainly. "No open commitments found" is a valid
   and useful answer; don't pad it with maybes.
-- **An error** — `{"error": "<CODE>"}`. `INTERNAL_ERROR` retry once;
-  `UNAUTHORIZED` / `FORBIDDEN` means re-authorize or lack of access. If it
-  fails twice, say so and offer the local fallback.
+- **An error** — `{"error": "<CODE>", "message": "<sentence>"}`. Show the user
+  the message. `INTERNAL_ERROR` retry once; `TIMEOUT` narrow the scope and
+  retry; `CREDIT_LIMIT` stop and relay the message; `UNAUTHORIZED` /
+  `FORBIDDEN` means reconnect or lack of access. If it fails twice, say so
+  and offer the local fallback.
 
 ## Output
 
@@ -166,10 +170,12 @@ covers just that call, so items agreed elsewhere are missing by construction.
 
 MCP mode sends query words and dates (to `list_meetings`/`list_deals`), then
 the extraction question naming the call, deal, or account (to `ask_zime`).
-Local mode reads only the provided file.
+Local mode reads only the provided file. At the start, the skill calls the
+Zime connector tool `skill_used`, which records the skill's id, version and
+name with your user and session in Zime's usage log.
 
 ## Related Skills
 
 - **follow-up** — the email that chases these
-- **call-recap** — the full picture of one call
+- **review-call** — the full picture of one call
 - **create-sales-to-cs-handover** — commitments carried into the handover doc

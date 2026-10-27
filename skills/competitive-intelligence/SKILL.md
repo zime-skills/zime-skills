@@ -7,13 +7,13 @@ metadata:
   zime:tag: intelligence
   zime:roles: ae,se
   zime:visibility: global
-  zime:skill-version: 1
+  zime:skill-version: "1"
   zime:marketplace-version: 0.1.20
 ---
 
 # Competitive Intelligence
 
-Before anything else, call the Zime connector tool `skill_used` with skill_id `97b63479-93dc-4cf2-9ee1-754a216267b4`, skill_version `1` and skill_slug `competitive-intelligence`. It records which skill ran for Zime usage analytics. If the Zime connector is not available, skip this step and continue. There is no need to narrate this call.
+Before anything else, call the Zime connector tool `skill_used` with skill_id `97b63479-93dc-4cf2-9ee1-754a216267b4`, skill_version `1` and skill_slug `competitive-intelligence`. It records which skill ran for Zime usage analytics. If the Zime connector is not available, skip this step and continue.
 
 Answers "what are customers actually saying about Competitor X?" from the
 workspace's own calls. The value is that it's evidence from real
@@ -57,18 +57,20 @@ cheaper."
 ## Usage
 
 ```
-/competitive-intelligence <competitor> [+ scope] [+ when]
+@competitive-intelligence <competitor> [+ scope] [+ when]
 ```
 
-Competitive intel on: $ARGUMENTS
+In the ChatGPT desktop app you can also type `/competitive-intelligence`.
+
+Report competitive intel on the competitor the user named.
 
 ## Routing
 
-- Objections on ONE deal, competitor or not → `deal-strategy`.
-- A recap of one call that happened to mention a competitor → `call-recap`.
+- Objections on ONE deal, competitor or not, or win/loss rates and pipeline
+  totals → `review-account`.
+- A recap of one call that happened to mention a competitor → `review-call`.
 - Turning competitive evidence into a battlecard or talking points →
   `create-sales-asset`.
-- Win/loss rates and pipeline totals → `pipeline-review`.
 
 ## What I Need From You
 
@@ -102,7 +104,7 @@ silently answer a much smaller question than the one asked.
 ### Cross-corpus
 
 ```json
-{ "question": "Where has Concerto come up in our calls in the last quarter, what did customers say about them, and how did we position against them?" }
+{ "question": "Where has Initech come up in our calls in the last quarter, what did customers say about them, and how did we position against them?" }
 ```
 
 Send the question close to verbatim with the competitor named explicitly and
@@ -120,7 +122,7 @@ Resolve first, so the call is named correctly:
 then name it in the question:
 
 ```json
-{ "question": "On the Acme call on Aug 12, did Concerto or any competitor come up? What exactly was said, and how did we respond?" }
+{ "question": "On the Acme call on Aug 12, did Initech or any competitor come up? What exactly was said, and how did we respond?" }
 ```
 
 ### Outcomes
@@ -130,9 +132,11 @@ then name it in the question:
   mentions this competitor, and stop. Do **not** supplement with what you know
   about them from elsewhere. A clean "no mentions" is a real answer and often
   a useful one.
-- **An error** — `{"error": "<CODE>"}`. `INTERNAL_ERROR` retry once;
-  `UNAUTHORIZED` / `FORBIDDEN` means re-authorize or lack of access. If it
-  fails twice, say so and offer the local fallback.
+- **An error** — `{"error": "<CODE>", "message": "<sentence>"}`. Show the user
+  the message. `INTERNAL_ERROR` retry once; `TIMEOUT` narrow the scope or
+  window and retry; `CREDIT_LIMIT` stop and relay the message; `UNAUTHORIZED` /
+  `FORBIDDEN` means reconnect or lack of access. If it fails twice, say so
+  and offer the local fallback.
 
 ## Output
 
@@ -194,10 +198,12 @@ competitor, only what the files contain.
 
 MCP mode sends the question text, with any call/account/window named inside
 it (to `ask_zime`), and query words plus dates when confirming a call
-first (to `list_meetings`). Local mode reads only the provided files.
+first (to `list_meetings`). Local mode reads only the provided files. At the
+start, the skill calls the Zime connector tool `skill_used`, which records the
+skill's id, version and name with your user and session in Zime's usage log.
 
 ## Related Skills
 
 - **create-sales-asset** — turn this evidence into a battlecard
-- **deal-strategy** — competitor dynamics on one specific deal
-- **get-transcript** — the exact quotable line
+- **review-account** — competitor dynamics on one specific deal
+- **review-call** — the exact quotable line from one call

@@ -7,18 +7,17 @@ metadata:
   zime:tag: workflow
   zime:roles: ae,bdr
   zime:visibility: global
-  zime:skill-version: 1
+  zime:skill-version: "1"
   zime:marketplace-version: 0.1.20
 ---
 
 # Daily Briefing
 
-Before anything else, call the Zime connector tool `skill_used` with skill_id `aa4d7a1f-2f3c-4c5d-be5f-6d7cec6f6816`, skill_version `1` and skill_slug `daily-briefing`. It records which skill ran for Zime usage analytics. If the Zime connector is not available, skip this step and continue. There is no need to narrate this call.
+Before anything else, call the Zime connector tool `skill_used` with skill_id `aa4d7a1f-2f3c-4c5d-be5f-6d7cec6f6816`, skill_version `1` and skill_slug `daily-briefing`. It records which skill ran for Zime usage analytics. If the Zime connector is not available, skip this step and continue.
 
 Answers "what do I need to know this morning?" — the day's meetings, what
-moved on the deals, and what's about to slip. Optimized for speed: this is the
-skill a rep runs before their first call, so it uses Zime's instant agent
-rather than the deep one.
+moved on the deals, and what's about to slip. It's the skill a rep runs
+before their first call, so the briefing stays short.
 
 ## How It Works
 
@@ -32,9 +31,9 @@ rather than the deep one.
 │  OPTIONAL — CONCRETE SCHEDULE                                    │
 │  ✓ list_meetings for today's actual meetings, with times         │
 ├─────────────────────────────────────────────────────────────────┤
-│  DELEGATE (Zime instant agent)                                   │
+│  DELEGATE (Zime agent)                                           │
 │  + ask_zime for what changed and what needs attention            │
-│  + Fast tier by design — this runs before the first call         │
+│  + Kept short — this runs before the first call                  │
 ├─────────────────────────────────────────────────────────────────┤
 │  LOCAL FALLBACK (no zime-mcp)                                    │
 │  ~ Read a calendar or CRM export the user provides               │
@@ -44,17 +43,19 @@ rather than the deep one.
 ## Usage
 
 ```
-/daily-briefing [today | this week | date]
+@daily-briefing [today | this week | date]
 ```
 
-Brief me for: $ARGUMENTS
+In the ChatGPT desktop app you can also type `/daily-briefing`.
+
+Brief the user for the day or window they asked for, defaulting to today.
 
 ## Routing
 
 - Prep for ONE specific upcoming call → `call-prep`. This skill lists the
   day; that one prepares you for a meeting.
-- Full pipeline health across many deals → `pipeline-review`.
-- One deal in depth → `deal-strategy`.
+- Full pipeline health across many deals, or one deal in depth →
+  `review-account`.
 - Everything outstanding regardless of today → `actions-commitments`.
 
 ## What I Need From You
@@ -98,11 +99,13 @@ get a list of alerts with nothing to act on.
 - **A briefing** — deliver per Output below.
 - **A quiet day** — "nothing changed and you have no meetings" is a valid,
   useful answer. Don't manufacture items to fill it out.
-- **An error** — `{"error": "<CODE>"}`. `INTERNAL_ERROR` retry once;
-  `UNAUTHORIZED` / `FORBIDDEN` means re-authorize or lack of access. If it
-  fails twice, say so and offer the local fallback. If only `list_meetings`
-  succeeded, deliver the schedule alone and say the change summary was
-  unavailable — a partial briefing labelled as partial is fine.
+- **An error** — `{"error": "<CODE>", "message": "<sentence>"}`. Show the
+  user the message. `INTERNAL_ERROR` retry once; `TIMEOUT` narrow the window
+  and retry; `CREDIT_LIMIT` stop and relay the message; `UNAUTHORIZED` /
+  `FORBIDDEN` means reconnect or lack of access. If it fails twice, say so
+  and offer the local fallback. If only `list_meetings` succeeded, deliver
+  the schedule alone and say the change summary was unavailable — a partial
+  briefing labelled as partial is fine.
 
 ## Output
 
@@ -139,11 +142,10 @@ Rules:
 
 ## Tips
 
-1. **Run it before your first call** — that's the design point; it uses the
-   fast tier deliberately.
+1. **Run it before your first call** — that's the design point.
 2. **"This week" works** — say so in the request and it goes into the question.
 3. **Not prepped?** Chain into `call-prep` for the meeting that matters most.
-4. **Wanting depth, not speed?** That's `pipeline-review`.
+4. **Wanting depth, not speed?** That's `review-account`.
 
 ## Local mode (only when no zime-mcp server is connected)
 
@@ -157,9 +159,12 @@ Don't infer change from a snapshot.
 
 MCP mode sends a date range and empty query (to `list_meetings`) and the
 question text (to `ask_zime`). Local mode reads only the provided file.
+At the start, the skill calls the Zime connector tool `skill_used`, which
+records the skill's id, version and name with your user and session in
+Zime's usage log.
 
 ## Related Skills
 
 - **call-prep** — prepare for the meeting this briefing surfaced
-- **pipeline-review** — the deeper weekly version
+- **review-account** — the deeper pipeline or single-deal view
 - **actions-commitments** — everything open, not just today

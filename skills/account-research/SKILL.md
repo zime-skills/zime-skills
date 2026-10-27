@@ -1,19 +1,19 @@
 ---
 name: account-research
-description: "Research a new prospect company before you reach out. Checks if they fit our ICP and who the buyers might be. Use for companies not yet in CRM. For existing accounts, use get-account instead."
+description: "Research a new prospect company before you reach out. Checks if they fit our ICP and who the buyers might be. Use for companies not yet in CRM. For existing accounts, use review-account instead."
 license: MIT
 metadata:
   zime:skill-id: a996cb94-8af5-4b6d-ae1e-5bd2fe043782
   zime:tag: research
   zime:roles: ae,bdr
   zime:visibility: global
-  zime:skill-version: 1
+  zime:skill-version: "1"
   zime:marketplace-version: 0.1.20
 ---
 
 # Account Research
 
-Before anything else, call the Zime connector tool `skill_used` with skill_id `a996cb94-8af5-4b6d-ae1e-5bd2fe043782`, skill_version `1` and skill_slug `account-research`. It records which skill ran for Zime usage analytics. If the Zime connector is not available, skip this step and continue. There is no need to narrate this call.
+Before anything else, call the Zime connector tool `skill_used` with skill_id `a996cb94-8af5-4b6d-ae1e-5bd2fe043782`, skill_version `1` and skill_slug `account-research`. It records which skill ran for Zime usage analytics. If the Zime connector is not available, skip this step and continue.
 
 Researches a company **before** there's a relationship. The entity isn't in
 CRM, there are no calls to read, and no Zime signals exist for it — so this
@@ -25,8 +25,8 @@ Every other skill in this plugin resolves an entity in Zime and delegates to
 an agent. This one inverts that:
 
 - **No resolve step.** The prospect isn't in our CRM. If they were, the user
-  wants `get-account`.
-- **Claude web search is the primary source**, not a fallback.
+  wants `review-account`.
+- **Web search is the primary source**, not a fallback.
 - **`ask_zime` is called once, and not about the prospect.** It's called about
   *us* — to pull our ICP definition and what our won customers look like, so
   "do they fit" is measured against something real instead of a guess.
@@ -46,7 +46,7 @@ an agent. This one inverts that:
 │  ✓ Buyers and likely champions                                   │
 │  ✓ Trigger events: funding, hiring, launches, reorgs             │
 ├─────────────────────────────────────────────────────────────────┤
-│  STEP 3 — SCORE THE FIT (Claude, against Step 1's baseline)      │
+│  STEP 3 — SCORE THE FIT (against Step 1's baseline)              │
 │  ✓ ICP scorecard with evidence per dimension                     │
 │  ✓ Recommended angle and entry point                             │
 ├─────────────────────────────────────────────────────────────────┤
@@ -59,16 +59,17 @@ an agent. This one inverts that:
 ## Usage
 
 ```
-/account-research <company name or domain>
+@account-research <company name or domain>
 ```
 
-Research the prospect: $ARGUMENTS
+In the ChatGPT desktop app you can also type `/account-research`.
+
+Research the prospect the user named.
 
 ## Routing
 
-- An **existing CRM account** — record, owner, industry → `get-account`. This
-  skill is for companies not yet in CRM.
-- A deal already in flight → `deal-strategy`.
+- An **existing CRM account**, or a deal already in flight — record, owner,
+  stage, risk → `review-account`. This skill is for companies not yet in CRM.
 - A competitor rather than a prospect → `competitive-intelligence` (which
   reads our calls, not the web).
 - Building the outreach asset after research → `create-sales-asset`.
@@ -82,7 +83,7 @@ The company name, ideally with a domain. Helpful additions:
 - **Why they're on your list** — inbound, a trigger event, a referral
 
 If the company turns out to already be in CRM, say so and offer
-`get-account` rather than researching them as new.
+`review-account` rather than researching them as new.
 
 ## MCP mode (when zime-mcp is connected)
 
@@ -94,7 +95,7 @@ If the company turns out to already be in CRM, say so and offer
 { "question": "What is our ICP definition, and what do our won customers have in common — company size, industry, GTM motion, team structure, and the pains that made them buy?" }
 ```
 
-Do this **first**. Without it, the fit assessment is Claude's prior about what
+Do this **first**. Without it, the fit assessment is the model's prior about what
 a good customer looks like rather than ours. If `ask_zime` returns nothing
 useful on ICP, say the fit assessment is unanchored and label the scorecard as
 provisional — don't quietly substitute a generic B2B SaaS ICP.
@@ -194,7 +195,7 @@ scorecard says headcount is unknown.
 2. **Say who you'd sell to** — sharpens the buyer research considerably.
 3. **Careers pages are the best public GTM signal** — who they're hiring tells
    you how they sell.
-4. **Already a customer?** You want `get-account`, not this.
+4. **Already a customer?** You want `review-account`, not this.
 
 ## Standalone mode (no zime-mcp connected)
 
@@ -207,10 +208,12 @@ depend on Zime.
 
 MCP mode sends one question about **our** ICP to the zime-mcp server — never
 the prospect's name, since Zime has no data on them. Web searches send the
-prospect's public name to the search tool.
+prospect's public name to the search tool. At the start, the skill calls the
+Zime connector tool `skill_used`, which records the skill's id, version and
+name with your user and session in Zime's usage log.
 
 ## Related Skills
 
-- **get-account** — a company already in CRM
+- **review-account** — a company already in CRM
 - **create-sales-asset** — build the outreach asset from this research
 - **call-prep** — once the first meeting is booked

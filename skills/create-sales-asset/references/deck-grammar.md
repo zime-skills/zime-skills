@@ -71,7 +71,7 @@ but the four load-bearing fields never drop out:
 
 | Account | Signal / pattern | Evidence | Date | Next action |
 |---|---|---|---|---|
-| Holcim | Renewal-confidence risk | Cost-optimization feature unresolved 5+ weeks | 2026-06-24 | Prioritize caching; align new stakeholder |
+| Northwind | Renewal-confidence risk | Reporting export request unresolved 5+ weeks | 2026-06-24 | Prioritize caching; align new stakeholder |
 
 **Rules:**
 
@@ -119,7 +119,7 @@ Every asset ends with the sources line naming the accounts and date range the
 evidence came from:
 
 ```
-Sources: Zime call recordings — Holcim, Jun 18 and Jun 24 2026.
+Sources: Zime call recordings — Northwind, Jun 18 and Jun 24 2026.
 ```
 
 ## The caption that always appears

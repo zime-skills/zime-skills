@@ -7,13 +7,13 @@ metadata:
   zime:tag: communication
   zime:roles: ae,bdr
   zime:visibility: global
-  zime:skill-version: 1
+  zime:skill-version: "1"
   zime:marketplace-version: 0.1.20
 ---
 
 # Follow-up
 
-Before anything else, call the Zime connector tool `skill_used` with skill_id `92e9d1f2-67c9-43c2-9d25-26e6cefe69d0`, skill_version `1` and skill_slug `follow-up`. It records which skill ran for Zime usage analytics. If the Zime connector is not available, skip this step and continue. There is no need to narrate this call.
+Before anything else, call the Zime connector tool `skill_used` with skill_id `92e9d1f2-67c9-43c2-9d25-26e6cefe69d0`, skill_version `1` and skill_slug `follow-up`. It records which skill ran for Zime usage analytics. If the Zime connector is not available, skip this step and continue.
 
 Turns "draft a follow-up for my Acme call" into a sendable email. The Zime
 call agent drafts it from what was actually said and committed, so the recap
@@ -44,14 +44,16 @@ lines and next steps are real rather than plausible.
 ## Usage
 
 ```
-/follow-up <company or call> [+ when]
+@follow-up <company or call> [+ when]
 ```
 
-Draft the follow-up for: $ARGUMENTS
+In the ChatGPT desktop app you can also type `/follow-up`.
+
+Draft the follow-up for the call the user named.
 
 ## Routing
 
-- A structured internal summary rather than a customer email → `call-recap`.
+- A structured internal summary rather than a customer email → `review-call`.
 - Just the open items and owners → `actions-commitments`.
 - Prep for the NEXT call → `call-prep`.
 
@@ -96,10 +98,12 @@ pronouns to real names — the agent has no memory of this conversation.
 - **A draft** — deliver per Output below.
 - **The agent has nothing** (e.g. no commitments detected) — say so and don't
   manufacture next steps to fill the email.
-- **An error** — `{"error": "<CODE>"}`. `INTERNAL_ERROR` retry once;
-  `UNAUTHORIZED` / `FORBIDDEN` means re-authorize or lack of access. If it
-  fails twice, say plainly the drafting service couldn't be reached and offer
-  the local fallback — never pass a hand-written email off as agent-backed.
+- **An error** — `{"error": "<CODE>", "message": "<sentence>"}`. Show the
+  user the message. `INTERNAL_ERROR` retry once; `TIMEOUT` retry once;
+  `CREDIT_LIMIT` stop and relay the message; `UNAUTHORIZED` / `FORBIDDEN`
+  means reconnect or lack of access. If it fails twice, say plainly the
+  drafting service couldn't be reached and offer the local fallback — never
+  pass a hand-written email off as agent-backed.
 
 ## Output
 
@@ -160,13 +164,11 @@ Here's what we agreed:
 - Never state a discount, price, or contractual term the call didn't contain.
 - Always caption it as a draft. This skill does not send email.
 
-
 ### Render it inline in the chat
 
-Deliver the caption and the email **inline in the chat response**. Do not
-create an artifact for it: the rep is going to select the email body and
-paste it into a mail client, and an artifact makes that harder rather than
-easier.
+Deliver the caption and the email **inline in the chat response**, as plain
+text. The rep is going to select the email body and paste it into a mail
+client, so keep it in the chat rather than in a separate document or panel.
 
 The email style rules above still govern the body — plain text, no markdown,
 plain dashes for lists. Keep any `[confirm timing]` placeholders visible
@@ -190,9 +192,11 @@ draft covers only the provided transcript.
 
 MCP mode sends the query words and date range (to `list_meetings`), then the
 drafting question naming the call (to `ask_zime`). Local mode reads
-only the provided file. Neither mode sends email.
+only the provided file. Neither mode sends email. At the start, the skill
+calls the Zime connector tool `skill_used`, which records the skill's id,
+version and name with your user and session in Zime's usage log.
 
 ## Related Skills
 
-- **call-recap** — the internal summary version
+- **review-call** — the internal summary version
 - **actions-commitments** — what's still open across calls
