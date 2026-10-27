@@ -1,20 +1,20 @@
-# Contributing to Zime GTM Skills
+# Contributing to Zime GTM Skills for ChatGPT
 
-Thanks for helping make Claude better at go-to-market work. This guide explains how skills get into this repository, what a good skill looks like, and what to do when you find a problem.
+Thanks for helping make ChatGPT better at go-to-market work. This guide explains where these skills come from, what a good skill looks like, and what to do when you find a problem.
 
-## This repository is generated
+## Where these skills come from
 
-`skills/` is rendered by the Zime skills publisher from the Zime database, and every publish rebuilds it. **A pull request that edits `skills/` will be overwritten**, so please do not send one. The publisher also sets `version` and `name` in `.claude-plugin/plugin.json`; the other fields there (description, keywords, links) are kept across publishes and can be changed by pull request.
+Skills are written and published in the Zime dashboard. The versions here are adapted for ChatGPT by the Zime team, so please don't send a pull request that edits `skills/`. Open an issue instead and we'll make the change.
 
-Pull requests are welcome for everything else: this guide, the README, issue templates.
+Pull requests are welcome for everything else: this guide and the README.
 
 ## How to contribute a skill
 
 1. Sign in to the [Zime dashboard](https://app.zime.ai), open **Skills**, and choose **New skill**.
-2. Write it. The **Skill Builder** skill in this catalogue can draft one from a plain-language request and knows the Zime connector's tools.
+2. Write it. The **skill-builder** skill can draft one from a plain-language request and knows the Zime connector's tools.
 3. Set the visibility to **Open source** and publish.
 
-Your skill is scanned, rendered into this repository on the next publish run, and listed on [zime.ai/gtm-skills](https://zime.ai/gtm-skills) with your name, role, company and, if you add it, your LinkedIn profile. Publishing open source always credits the author; that recognition is the point.
+Your skill is scanned and listed on [zime.ai/gtm-skills](https://zime.ai/gtm-skills) with your name, role, company and, if you add it, your LinkedIn profile. Publishing open source always credits the author.
 
 ## How to improve an existing skill
 
@@ -25,14 +25,14 @@ Only a skill's author can edit it. If you see a way to make one better:
 
 ## What a good skill looks like
 
-**The description is the trigger.** Claude reads it to decide whether to use the skill, so write it as the requests a person would actually make: "Use for 'prep me for my 3pm', 'what should I know before the Acme call'". Say what the skill does not cover. Keep it under 1,000 characters so it also fits claude.ai's skill library.
+**The description is the trigger.** ChatGPT reads it to decide when to use the skill, so write it as the requests a person would actually make: "Use for 'prep me for my 3pm', 'what should I know before the Acme call'". Say what the skill does not cover. Keep it under 1,024 characters.
 
 **The body is the playbook.** In this order:
 
 1. What the skill produces and for whom.
-2. How to resolve what the user means (which call, which deal) and what to do when it is ambiguous.
+2. How to work out what the user means (which call, which deal) and what to do when it is ambiguous.
 3. Which Zime tools to call and in what order.
-4. The shape of the answer.
+4. The shape of the answer, in plain markdown.
 5. Guardrails: use only real evidence from calls and CRM, never invent quotes or numbers, never send anything on the user's behalf, say plainly when something is unknown.
 
 **Naming and metadata**
@@ -48,16 +48,20 @@ Only a skill's author can edit it. If you see a way to make one better:
 
 Every publish runs a content scan. A skill is held, not published, if it contains:
 
-- Links to any host other than `zime.ai` subdomains, `docs.anthropic.com` or `support.anthropic.com`.
+- Links outside `zime.ai` and its subdomains. Most other hosts are blocked.
 - Anything that looks like a credential, token or API key.
-- Instructions that try to override Claude's own guidance or another skill.
+- Instructions that try to override the assistant's own guidance or another skill.
 - Hidden characters such as zero-width spaces.
 
-Also do not include customer names, deal values or call excerpts from real accounts in the skill text itself. The skill should fetch that at run time through the connector.
+Skills here also must not:
+
+- Tell the assistant to use a different connector. A skill uses the Zime connector's tools.
+- Rely on features of one assistant, such as placeholders like `$ARGUMENTS` or special output blocks.
+- Include customer names, deal values or call excerpts from real accounts. The skill should fetch those at run time through the connector.
 
 ## Testing before you publish
 
-Run the skill in Claude against a real call or deal you have access to. Check that:
+Run the skill in ChatGPT against a real call or deal you have access to. Check that:
 
 - It triggers on the phrasings in its description and not on unrelated ones.
 - Every fact in the answer traces back to a call or CRM record.
@@ -66,7 +70,7 @@ Run the skill in Claude against a real call or deal you have access to. Check th
 ## Reporting problems
 
 - **A skill gives wrong or made-up output:** open an issue with the skill slug, the prompt you used, and what came back. Redact customer details.
-- **Install or connector problems:** support@zime.ai.
+- **Install or connector problems:** see [zime.ai/support](https://zime.ai/support) or email support@zime.ai.
 - **Security concerns:** email support@zime.ai with "security" in the subject rather than opening a public issue.
 
 ## Code of conduct

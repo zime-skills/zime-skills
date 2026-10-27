@@ -54,10 +54,9 @@ session.
 
 Skills are scanned on save. Any of these rejects the version:
 
-- [ ] No link to a host other than `zime.ai` and its subdomains,
-      `docs.anthropic.com` or `support.anthropic.com`. A skill can instruct
-      the assistant to send data to any URL it names, so everything else is
-      blocked, including OpenAI's documentation.
+- [ ] No links outside `zime.ai` and its subdomains. A skill can instruct
+      the assistant to send data to any URL it names, so most other hosts
+      are blocked, including OpenAI's documentation.
 - [ ] No credential-shaped strings: cloud access keys, tokens, private key
       blocks, or `password = "…"` style assignments, even as examples.
 - [ ] No instruction-override phrasing, even when describing what not to do.
