@@ -20,13 +20,15 @@
     "com.openai": {
       "interface": {
         "displayName": "Zime",
-        "shortDescription": "Sales skills on your real calls and deals",
+        "shortDescription": "Sales skills on calls & deals",
         "longDescription": "Zime records and analyzes your sales calls and links them to CRM deals, accounts and contacts. These skills use that data to prep your next call, draft follow-ups, review calls and accounts, track commitments, build battlecards and sales assets, and write CS handovers. Requires a Zime account.",
         "developerName": "Zime",
         "category": "Productivity",
         "capabilities": ["Read"],
         "websiteURL": "https://zime.ai/gtm-skills",
         "privacyPolicyURL": "https://zime.ai/privacy-policy",
+        "termsOfServiceURL": "https://zime.ai/tnc",
+        "supportURL": "https://zime.ai/support",
         "defaultPrompt": [
           "Prep me for my next call",
           "Review my last call",
